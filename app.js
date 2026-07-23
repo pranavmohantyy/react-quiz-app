@@ -1,1 +1,44 @@
-const questions = require('./questions.json');\n\nconst DifficultyFilter = () => {\n    const [difficulty, setDifficulty] = React.useState('Easy');\n    const [streak, setStreak] = React.useState(0);\n    const [score, setScore] = React.useState(0);\n    let timer = 10;\n    if (difficulty === 'Medium') timer = 20;\n    else if (difficulty === 'Hard') timer = 30;\n\n    const handleAnswer = (isCorrect) => {\n        if (isCorrect) {\n            setStreak(streak + 1);\n            setScore(score + 1);\n        } else {\n            setStreak(0);\n        }\n    };\n\n    const shareScore = () => {\n        const result = `I scored ${score} points on the React Quiz!`;\n        navigator.clipboard.writeText(result);\n        alert('Score copied to clipboard!');\n    };\n\n    return (\n        <div>\n            <select onChange={(e) => setDifficulty(e.target.value)}>\n                <option value='Easy'>Easy</option>\n                <option value='Medium'>Medium</option>\n                <option value='Hard'>Hard</option>\n            </select>\n            <button onClick={shareScore}>Share Score</button>\n        </div>\n    );\n};\n\nexport default DifficultyFilter;
+const questions = require('./questions.json');
+
+const DifficultyFilter = () => {
+    const [difficulty, setDifficulty] = React.useState('Easy');
+    const [streak, setStreak] = React.useState(0);
+    const [score, setScore] = React.useState(0);
+    let timer = 10;
+    if (difficulty === 'Medium') timer = 20;
+    else if (difficulty === 'Hard') timer = 30;
+
+    const handleAnswer = (isCorrect) => {
+        if (isCorrect) {
+            setStreak(streak + 1);
+            setScore(score + 1);
+        } else {
+            setStreak(0);
+        }
+    };
+
+    const handleKeyPress = (event) => {
+        if (event.key >= '1' && event.key <= '4') {
+            const answerIndex = parseInt(event.key) - 1;
+            const isCorrect = questions[currentQuestion].correctAnswer === answerIndex;
+            handleAnswer(isCorrect);
+        } else if (event.key === ' ') {
+            // proceed to next question
+        }
+    };
+
+    React.useEffect(() => {
+        window.addEventListener('keydown', handleKeyPress);
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, []);
+
+    return (
+        <div>
+            {/* Quiz UI rendering here */}
+        </div>
+    );
+};
+
+export default DifficultyFilter;
